@@ -33,7 +33,7 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     }
 
     ~MOUSE_RAW_SENDER(){
-        std::cout << "KONIEC" << std::endl; 
+        std::cout << "KONIEC MOUSE RAW SENDER" << std::endl; 
     }
 
     ////////////////////////////////////////////////////////

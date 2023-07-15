@@ -6,6 +6,8 @@
 
 */
 
+#include <iostream>
+
 static HHOOK mouseHook;
 
 class MOUSE_SUPPORT {
@@ -18,7 +20,16 @@ public:
 
     LRESULT HandleMouseHook(int nCode, WPARAM wParam, LPARAM lParam) {
 
+        if (nCode >= 0) {
+            if (wParam == WM_LBUTTONDOWN) {
+                std::cout << "Left mouse button down" << std::endl;
+            }
+        }
+
         if (nCode < 0) {
+
+            std::cout << "FLAGA_1" << std::endl;
+
             return CallNextHookEx(mouseHook, nCode, wParam, lParam);
         }
 
@@ -31,8 +42,19 @@ public:
 
         MSG msg;
         while (GetMessage(&msg, NULL, 0, 0)) {
+
+            if (msg.message == WM_KEYDOWN) {
+                WPARAM wParam = msg.wParam;
+                LPARAM lParam = msg.lParam;
+                char buffer[256];
+                GetKeyNameTextA(lParam, buffer, sizeof(buffer));
+
+                std::cout << "Key Down - Key: " << static_cast<int>(wParam) << ", Name: " << buffer << std::endl;
+            }
+
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
         }
     }
 

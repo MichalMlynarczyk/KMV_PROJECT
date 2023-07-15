@@ -14,9 +14,9 @@
 #include <thread>
 
 #include "KMV/MOUSE_SUPPORT.cpp" 
-#include "RECEIVER/RECEIVER_TEMPLATE.cpp"
 #include "SENDER/SENDER_TEMPLATE.cpp"
 #include "KMV/MOUSE_RAW_SENDER.cpp"
+// #include "COMUNICATION/INPUT_LISTENER.cpp"
 #include "KMV/MOUSE_RAW_SENDER_MANAGMENT.cpp"
 
 using namespace std;
@@ -76,30 +76,6 @@ void _downloadInformation(){
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-
-// int main(){
-
-//     // _downloadInformation();         // POBIERANIE INFORMACJI O PORTACH I NUMERACH IP
-
-//     // ** ** ŁĄCZENIE DWÓCH KOMPUTERÓW ** ** //
-
-//     MOUSE_RAW_SENDER mouse_raw_sender_left;
-//     std::thread mouseRawSenderThreadLeft([&mouse_raw_sender_left]() {
-//     mouse_raw_sender_left._start("5100", "192.168.1.26", "LEFT");});        // WYSYŁANIE INFORMACJI O RUCHACH MYSZKI DO KLIENTA
-
-//     MOUSE_RAW_SENDER mouse_raw_sender_right;
-//     std::thread mouseRawSenderThreadRight([&mouse_raw_sender_right]() {
-//     mouse_raw_sender_right._start("5300", "192.168.1.23", "RIGHT");});        // WYSYŁANIE INFORMACJI O RUCHACH MYSZKI DO KLIENTA
-
-//     mouseRawSenderThreadLeft.join();                               // POCZEKAJ NA ZAKOŃCZENIE WĄTKU
-//     mouseRawSenderThreadRight.join();                               // POCZEKAJ NA ZAKOŃCZENIE WĄTKU
-
-//     while (true){
-        
-//     }
-
-//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-// }
 
 int main(){
     MOUSE_RAW_SENDER_MANAGMENT mouse_raw_sender_managment;

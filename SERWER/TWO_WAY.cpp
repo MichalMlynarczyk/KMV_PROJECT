@@ -1,5 +1,24 @@
+#ifndef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0600
+#elif _WIN32_WINNT < 0x0600
+    #undef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0600
+#endif
+
+#include <iostream>
+#include <WS2tcpip.h>
+#include <Windows.h>
+#include <sstream>
+#include <winsock2.h>
+#include <WS2tcpip.h>
+#include <string>
+#include <thread>
+#include <cstring>
+
 #include "RECEIVER/RECEIVER_TEMPLATE.cpp"
-#include "SENDER/SENDER_TEMPLATE.cpp"
+// #include "SENDER/SENDER_TEMPLATE.cpp"
+#include "KMV/MOUSE_RAW_RECEIVER.cpp"
+#include "COMUNICATION/INPUT_RECEIVER.cpp"
 #include <thread>
 
 using namespace std;
@@ -21,24 +40,71 @@ void clearScreen() {
     SetConsoleCursorPosition(hConsole, coordScreen);
 }
 
-int main(){
+int _downloadPortNumberInputListener(){
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
+    // Pobierz  NR PORTU
+    string PORT;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+    cout << "Podaj numer portu na ktorym bedziemy nasluchiwac INPUT LISTENER: ";
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+    getline(cin, PORT);
+
+    return stoi(PORT);
+}
+
+int _downloadPortNumberMouseRaw(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     clearScreen();
 
     // Pobierz  NR PORTU
     string PORT;
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-    cout << "Podaj numer portu na ktorym bedziemy nasluchiwac: ";
+    cout << "Podaj numer portu na ktorym bedziemy nasluchiwac MOUSE RAW: ";
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
     getline(cin, PORT);
 
-    RECEIVER receiver;
-    thread receiverThread(&RECEIVER::_receiveData, &receiver, stoi(PORT));
+    return stoi(PORT);
+}
 
-    // Wykonuj dalej kod 
-    receiverThread.detach();
+int main() {
 
+    int MOUSE_RAW_PORT_NUMBER = _downloadPortNumberMouseRaw();
+    int INPUT_LISTENER_PORT_NUMBER = _downloadPortNumberInputListener();
+
+    // ** ODBIERANIE I PRZETWARZANIE MOUSE RAW ** //
+    MOUSE_RAW_RECEIVER mouseRECEIVER;
+    std::thread thread_1([&mouseRECEIVER, MOUSE_RAW_PORT_NUMBER]() {
+        mouseRECEIVER._start(MOUSE_RAW_PORT_NUMBER);});  
     
+    thread_1.join();
+
+
+    // ** ODBIERANIE I PRZETWARZANIE INPUT LISTENER ** //
+    // INPUT_RECEIVER inputRECEIVER;
+    // std::thread thread_2([&inputRECEIVER, INPUT_LISTENER_PORT_NUMBER]() {
+    //     inputRECEIVER._start(INPUT_LISTENER_PORT_NUMBER);});  
+    
+    //thread_2.join();
 
 }
+
+// int main(){
+
+//     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//     clearScreen();
+
+//     // Pobierz  NR PORTU
+//     string PORT;
+//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//     cout << "Podaj numer portu na ktorym bedziemy nasluchiwac: ";
+//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+//     getline(cin, PORT);
+
+//     RECEIVER receiver;
+//     thread receiverThread(&RECEIVER::_receiveData, &receiver, stoi(PORT));
+
+//     // Wykonuj dalej kod 
+//     receiverThread.detach();
+
+// }
