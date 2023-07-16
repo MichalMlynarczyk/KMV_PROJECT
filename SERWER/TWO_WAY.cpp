@@ -23,8 +23,8 @@
 
 using namespace std;
 
-HANDLE hConsole;
-string position;
+HANDLE      hConsole;
+string      position;
 
 void clearScreen() {
     COORD coordScreen = { 0, 0 };
@@ -69,42 +69,21 @@ int _downloadPortNumberMouseRaw(){
 
 int main() {
 
-    int MOUSE_RAW_PORT_NUMBER = _downloadPortNumberMouseRaw();
-    int INPUT_LISTENER_PORT_NUMBER = _downloadPortNumberInputListener();
+    int MOUSE_RAW_PORT_NUMBER =         _downloadPortNumberMouseRaw();
+    int INPUT_LISTENER_PORT_NUMBER =    _downloadPortNumberInputListener();
 
     // ** ODBIERANIE I PRZETWARZANIE MOUSE RAW ** //
     MOUSE_RAW_RECEIVER mouseRECEIVER;
     std::thread thread_1([&mouseRECEIVER, MOUSE_RAW_PORT_NUMBER]() {
         mouseRECEIVER._start(MOUSE_RAW_PORT_NUMBER);});  
     
-    thread_1.join();
-
+    thread_1.detach();
 
     // ** ODBIERANIE I PRZETWARZANIE INPUT LISTENER ** //
-    // INPUT_RECEIVER inputRECEIVER;
-    // std::thread thread_2([&inputRECEIVER, INPUT_LISTENER_PORT_NUMBER]() {
-    //     inputRECEIVER._start(INPUT_LISTENER_PORT_NUMBER);});  
+    INPUT_RECEIVER inputRECEIVER;
+    std::thread thread_2([&inputRECEIVER, INPUT_LISTENER_PORT_NUMBER]() {
+        inputRECEIVER._start(INPUT_LISTENER_PORT_NUMBER);});  
     
-    //thread_2.join();
+    thread_2.join();
 
 }
-
-// int main(){
-
-//     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-//     clearScreen();
-
-//     // Pobierz  NR PORTU
-//     string PORT;
-//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-//     cout << "Podaj numer portu na ktorym bedziemy nasluchiwac: ";
-//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-//     getline(cin, PORT);
-
-//     RECEIVER receiver;
-//     thread receiverThread(&RECEIVER::_receiveData, &receiver, stoi(PORT));
-
-//     // Wykonuj dalej kod 
-//     receiverThread.detach();
-
-// }

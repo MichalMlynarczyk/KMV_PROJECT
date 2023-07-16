@@ -15,8 +15,8 @@ class INPUT_LISTENER : public SENDER_TEMP{
 
     public:
 
-    string DIRECTION;                           // Z JAKIEJ STRONY WYSYŁAĆ DANE
-    bool stopFlag = false;                      // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
+    string      DIRECTION;                           // Z JAKIEJ STRONY WYSYŁAĆ DANE
+    bool        stopFlag = false;                    // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
 
     //////////////////////////////////////////////
     //////////////////////////////////////////////
@@ -30,10 +30,9 @@ class INPUT_LISTENER : public SENDER_TEMP{
         */
 
         _startupWinsock();
-        _createHintStructure(PORT_NUMBER, IP_NUMBER);       // TWORZENIE POŁĄCZENIA TCP
+        _createHintStructure(PORT_NUMBER, IP_NUMBER);       // TWORZENIE POŁĄCZENIA UDP
         _sendData();
         _shutdown();
-
     }
 
     void _stop(){
@@ -219,10 +218,3 @@ class INPUT_LISTENER : public SENDER_TEMP{
     }
 
 };
-
-// int main(){
-
-//     INPUT_LISTENER input_listener;
-//     input_listener._start(6100, "192.168.1.23", "RIGHT");
-
-// }

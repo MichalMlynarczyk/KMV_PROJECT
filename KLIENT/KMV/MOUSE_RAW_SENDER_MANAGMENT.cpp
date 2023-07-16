@@ -54,7 +54,7 @@ class MOUSE_RAW_SENDER_MANAGMENT{
 
 
                 mouseRawSenderThread.join();
-              //   inputListenerThread.join();
+                // inputListenerThread.join();
             }
             else if (currentMousePosition.x == MAX_SCREEN_WIDTH){
 

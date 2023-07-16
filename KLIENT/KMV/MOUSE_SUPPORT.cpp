@@ -13,6 +13,38 @@ static HHOOK mouseHook;
 class MOUSE_SUPPORT {
 public:
 
+    int PORT_NUMBER         = 6100;
+    string IP_NUMBER        = "192.168.1.26";
+
+    bool stopFlag           = false;                // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
+
+
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
+    
+    void _start(){
+
+        // ** WYŁĄCZNIE MYSZKI ** //
+        _deactivateMouse();
+
+    }
+
+    void _stop(){               
+
+        // ** WŁĄCZENIE MYSZKI ** //
+        _activeMouse();
+
+        // ** ZAKOŃCZENIE DZIAŁANIA OBIEKTU ** //
+        stopFlag = true; 
+    }
+
+    ~MOUSE_SUPPORT(){
+        std::cout << "KONIEC MOUSE SUPPORT" << std::endl;
+    }
+
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
+
     static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam) {
         MOUSE_SUPPORT* mouseSupport = reinterpret_cast<MOUSE_SUPPORT*>(lParam);
         return mouseSupport->HandleMouseHook(nCode, wParam, lParam);
@@ -23,6 +55,7 @@ public:
         if (nCode >= 0) {
             if (wParam == WM_LBUTTONDOWN) {
                 std::cout << "Left mouse button down" << std::endl;
+             //   _send("MOUSE_INPUT_LEFT_ON");
             }
         }
 
@@ -38,9 +71,11 @@ public:
 
     static void _deactivateMouse() {
 
+        // ** WYŁACZENIE MYSZKI ** //
         mouseHook = SetWindowsHookEx(WH_MOUSE_LL, &MouseHookProc, NULL, 0);
 
         MSG msg;
+
         while (GetMessage(&msg, NULL, 0, 0)) {
 
             if (msg.message == WM_KEYDOWN) {
@@ -56,6 +91,7 @@ public:
             DispatchMessage(&msg);
 
         }
+        
     }
 
     static void _activeMouse() {

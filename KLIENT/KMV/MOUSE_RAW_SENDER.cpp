@@ -5,11 +5,13 @@ using namespace std;
 class MOUSE_RAW_SENDER : public SENDER_TEMP{
     public:
 
-    int DISTANCE = 0;                           // W JAKIEJ POZYCJI TEORETYCZNIE KURSOR ZNAJDUJE
+    int DISTANCE            = 0;                          // W JAKIEJ POZYCJI TEORETYCZNIE KURSOR ZNAJDUJE
                                                 //      SIĘ NA DRUGIM MONITORZE
-    string MOUSE_STATE = "ON";                  // CZY MYSZKA JEST WŁĄCZONA CZY WYŁĄCZONA
-    string DIRECTION;                           // Z JAKIEJ STRONY WYSYŁAĆ DANE
-    bool stopFlag = false;                      // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
+    string MOUSE_STATE      = "ON";                       // CZY MYSZKA JEST WŁĄCZONA CZY WYŁĄCZONA
+    string DIRECTION;                                     // Z JAKIEJ STRONY WYSYŁAĆ DANE
+    bool stopFlag           = false;                      // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
+
+    INPUT_LISTENER input_sender;                        
 
     ////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////
@@ -22,6 +24,12 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
             URUCHAMIANIE WYSYŁANIA DANYCH
         */
 
+        // ** TWORZENIE POŁĄCZENIA UDP DLA INPUT SENDER ** //
+        input_sender._startupWinsock();
+        input_sender._createHintStructure(6100, "192.168.1.26");
+
+
+        // ** TWORZENIE POŁĄCZENIA UDP DLA RAW SENDER ** //
         _startupWinsock();
         _createHintStructure(stoi(PORT), IP);   // PRZYGOTOWYWANIE PORTU
         _getMouseRawInformation();              // WYSYŁANIE DANYCH
@@ -29,6 +37,11 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     } 
 
     void _stop() {
+
+        // ** ZATRZYMANIE INPUT SENDER ** //
+        input_sender._shutdown();
+        input_sender._stop();
+
         stopFlag = true;                        // ZATRZYMANIE
     }
 
@@ -54,6 +67,9 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
                 DISTANCE += VECTOR[0];
 
                 if (MOUSE_STATE == "ON"){
+
+                    // ** TWORZENIE OBIEKTU MOUSE_SUPPORT ** //
+                    MOUSE_SUPPORT mouseSupport;
                     std::thread thread(&MOUSE_SUPPORT::_deactivateMouse);
                     thread.detach();
                     MOUSE_STATE = "OFF";
@@ -112,33 +128,80 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
         switch (message)
         {
-        case WM_INPUT:
-        {
-            UINT bufferSize;
-            GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &bufferSize, sizeof(RAWINPUTHEADER));
-            BYTE *buffer = new BYTE[bufferSize];
-            GetRawInputData((HRAWINPUT)lParam, RID_INPUT, (LPVOID)buffer, &bufferSize, sizeof(RAWINPUTHEADER));
-
-            RAWINPUT *raw = (RAWINPUT*)buffer;
-
-            if (raw->header.dwType == RIM_TYPEMOUSE)
+            case WM_INPUT:
             {
-                int mX = raw->data.mouse.lLastX;
-                int mY = raw->data.mouse.lLastY;
+                UINT bufferSize;
+                GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &bufferSize, sizeof(RAWINPUTHEADER));
+                BYTE *buffer = new BYTE[bufferSize];
+                GetRawInputData((HRAWINPUT)lParam, RID_INPUT, (LPVOID)buffer, &bufferSize, sizeof(RAWINPUTHEADER));
 
-                int tab [2];
-                tab[0] = mX;
-                tab[1] = mY;
+                RAWINPUT *raw = (RAWINPUT*)buffer;
 
-                _sendAs(tab);
+                if (raw->header.dwType == RIM_TYPEMOUSE)
+                {
+                    int mX = raw->data.mouse.lLastX;
+                    int mY = raw->data.mouse.lLastY;
 
+
+                    // ** WCIŚNIĘCIE LEWEGO PRZYCISKU MYSZKI ** //
+                    if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) != 0) {
+                        input_sender._send("MOUSE_INPUT_LEFT_ON");
+                    }
+                    else if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) != 0) {
+                        input_sender._send("MOUSE_INPUT_LEFT_OFF");
+                    }
+
+                    // ** WCIŚNIĘCIE PRAWEGO PRZYCISKU MYSZKI ** //
+                    if ((raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) != 0) {
+                        input_sender._send("MOUSE_INPUT_RIGHT_ON");
+                    }
+                    else if ((raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) != 0) {
+                        input_sender._send("MOUSE_INPUT_RIGHT_OFF");
+                    }
+
+
+                    int tab [2];
+                    tab[0] = mX;
+                    tab[1] = mY;
+
+                    _sendAs(tab);
+
+                }
+
+                delete[] buffer;
+                break;
             }
-
-            delete[] buffer;
-            break;
-        }
-        default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
+            case WM_MOUSEWHEEL: 
+            {
+                // Przewijanie myszy w osi pionowej (góra/dół)
+                short delta = GET_WHEEL_DELTA_WPARAM(wParam);
+                if (delta > 0) {
+                    // Przewinięcie w górę
+                    //input_sender._send("MOUSE_SCROLL_UP");
+                    std::cout << "MOUSE_SCROLL_UP" << std::endl;
+                }
+                else if (delta < 0) {
+                    // Przewinięcie w dół
+                    //input_sender._send("MOUSE_SCROLL_DOWN");
+                    std::cout << "MOUSE_SCROLL_DOWN" << std::endl;
+                }
+                break;
+            }
+            case WM_MOUSEHWHEEL: 
+            {
+                // Przewijanie myszy w osi poziomej (lewo/prawo)
+                short delta = GET_WHEEL_DELTA_WPARAM(wParam);
+                if (delta > 0) {
+                    // Przewinięcie w lewo
+                    std::cout << "MOUSE_SCROLL_UP_" << std::endl;
+                } else if (delta < 0) {
+                    // Przewinięcie w prawo
+                    std::cout << "MOUSE_SCROLL_DOWN_" << std::endl;
+                }
+                break;
+            }
+            default:
+                return DefWindowProc(hWnd, message, wParam, lParam);
         }
         return 0;
     }

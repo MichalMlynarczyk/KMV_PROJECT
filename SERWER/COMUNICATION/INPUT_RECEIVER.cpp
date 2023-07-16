@@ -25,19 +25,22 @@ class INPUT_RECEIVER : public RECEIVER{
     void _receivedData(char *buf) override {
 
         if (std::strcmp(buf, "MOUSE_INPUT_LEFT_ON") == 0 ){
-            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
         }
 
         if (std::strcmp(buf, "MOUSE_INPUT_LEFT_OFF") == 0 ){
-            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+        }
+
+        if (std::strcmp(buf, "MOUSE_INPUT_RIGHT_ON") == 0 ){
+            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+        }
+
+        if (std::strcmp(buf, "MOUSE_INPUT_RIGHT_OFF") == 0 ){
+            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
         }
 
     }
 
 };
 
-// int main(){
-
-//     INPUT_RECEIVER input_listener;
-//     input_listener._start(6100);
-// }
