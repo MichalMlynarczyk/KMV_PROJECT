@@ -16,6 +16,7 @@
 #include "SENDER/SENDER_TEMPLATE.cpp"
 #include "KMV/INPUT_LISTENER.cpp"
 #include "KMV/MOUSE_SUPPORT.cpp" 
+#include "KMV/KEYBOARD.cpp"
 #include "KMV/MOUSE_RAW_SENDER.cpp"
 #include "KMV/MOUSE_RAW_SENDER_MANAGMENT.cpp"
 

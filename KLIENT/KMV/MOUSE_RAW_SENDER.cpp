@@ -11,7 +11,8 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     string DIRECTION;                                     // Z JAKIEJ STRONY WYSYŁAĆ DANE
     bool stopFlag           = false;                      // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
 
-    INPUT_LISTENER input_sender;                        
+    INPUT_LISTENER input_sender;  
+    KEYBOARD keybord;                      
 
     ////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////
@@ -26,7 +27,13 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
         // ** TWORZENIE POŁĄCZENIA UDP DLA INPUT SENDER ** //
         input_sender._startupWinsock();
-        input_sender._createHintStructure(6100, "192.168.1.26");
+        input_sender._createHintStructure(6100, "192.168.1.23");
+
+        // ** ZATRZYMYWANIE KLAWIATURY ** //
+        std::thread keyboardThread([&]() {
+        keybord._start();});
+
+        keyboardThread.detach(); 
 
 
         // ** TWORZENIE POŁĄCZENIA UDP DLA RAW SENDER ** //
@@ -37,6 +44,9 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     } 
 
     void _stop() {
+
+        // ** ZATRZYMANIE KEYBOARD ** //
+        keybord._stop();
 
         // ** ZATRZYMANIE INPUT SENDER ** //
         input_sender._shutdown();
@@ -145,6 +155,7 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
                     // ** WCIŚNIĘCIE LEWEGO PRZYCISKU MYSZKI ** //
                     if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) != 0) {
+                        std::cout   <<  &input_sender  <<  std::endl;
                         input_sender._send("MOUSE_INPUT_LEFT_ON");
                     }
                     else if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) != 0) {
@@ -268,6 +279,7 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
         UnregisterClass(wc.lpszClassName, GetModuleHandle(NULL));
     }
+
 
 };
 

@@ -26,10 +26,6 @@ class MOUSE_RAW_RECEIVER : public RECEIVER{
         // WYWOŁUJE ONA FUNKCE -- _RECEIVEDDATA(DATA) --    //
         // PRZY ODBIERANIU WIADOMOŚCI                       // 
         _receiveData(PORT_NUMBER);
-
-
-
-
     }
 
     void _receivedData(char * buf) override{

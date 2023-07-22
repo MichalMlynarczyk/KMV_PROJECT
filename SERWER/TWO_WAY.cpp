@@ -5,6 +5,7 @@
     #define _WIN32_WINNT 0x0600
 #endif
 
+#include <cctype>
 #include <iostream>
 #include <WS2tcpip.h>
 #include <Windows.h>

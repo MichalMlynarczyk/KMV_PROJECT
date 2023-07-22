@@ -45,7 +45,7 @@ class MOUSE_RAW_SENDER_MANAGMENT{
                 // ** MOUSE RAW SENDER ** //
                 MOUSE_RAW_SENDER mouse_raw_sender;
                 std::thread mouseRawSenderThread([&mouse_raw_sender]() {
-                mouse_raw_sender._start("5100", "192.168.1.26", "LEFT");}); 
+                mouse_raw_sender._start("5100", "192.168.1.23", "LEFT");}); 
 
                 // ** INPUT LISTENER ** // 
                 // INPUT_LISTENER input_listener;

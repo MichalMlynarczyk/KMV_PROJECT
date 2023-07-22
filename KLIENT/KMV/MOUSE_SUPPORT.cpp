@@ -14,7 +14,7 @@ class MOUSE_SUPPORT {
 public:
 
     int PORT_NUMBER         = 6100;
-    string IP_NUMBER        = "192.168.1.26";
+    string IP_NUMBER        = "192.168.1.23";
 
     bool stopFlag           = false;                // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
 
