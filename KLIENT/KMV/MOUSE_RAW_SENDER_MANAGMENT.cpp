@@ -9,25 +9,17 @@
 class MOUSE_RAW_SENDER_MANAGMENT{
     public:
 
-    string IP_1 = "192.168.1.26";
-    string IP_2 = "192.168.1.23";
-    string PORT_1 = "5100";
-    string PORT_2 = "5300";
-
-    string PORT_11 = "6100";
-    string PORT_21 = "6300";
-
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    void _start(){
-        _expect();
+    void _start(string * COMPUTERS_IP_NUMBER, string * COMPUTER_DIRECTION, int COMPUTERS_NUMBER){
+        _expect(COMPUTERS_IP_NUMBER, COMPUTER_DIRECTION, COMPUTERS_NUMBER);
     }
 
     /////////////////////////////////////////////
     /////////////////////////////////////////////
 
-    void _expect(){
+    void _expect(string * COMPUTERS_IP_NUMBER, string * COMPUTER_DIRECTION, int COMPUTERS_NUMBER){
         /*
             OCZEKUJUE NA ODPOWIEDNIĄ POZYCJĘ MYSZKI 
             I TWORZY OBIEKT MOUSE RAW SENDER
@@ -38,39 +30,48 @@ class MOUSE_RAW_SENDER_MANAGMENT{
         while (true){
 
             POINT currentMousePosition;
-            GetCursorPos(&currentMousePosition);                                 // POBIERANIE AKTUALNEJ POZYCJI MYSZKI  
+            GetCursorPos(&currentMousePosition);                                 // POBIERANIE AKTUALNEJ POZYCJI MYSZKI 
 
-            if (currentMousePosition.x == 0){
+            for (int i = 0; i < COMPUTERS_NUMBER; i++){
 
-                // ** MOUSE RAW SENDER ** //
-                MOUSE_RAW_SENDER mouse_raw_sender;
-                std::thread mouseRawSenderThread([&mouse_raw_sender]() {
-                mouse_raw_sender._start("5100", "192.168.1.23", "LEFT");}); 
+                if (currentMousePosition.x == 0 && COMPUTER_DIRECTION[i] == "LEFT"){
 
-                // ** INPUT LISTENER ** // 
-                // INPUT_LISTENER input_listener;
-                // std::thread inputListenerThread([&input_listener]() {
-                // input_listener._start(6100, "192.168.1.26", "LEFT");}); 
+                    // ** MOUSE RAW SENDER ** //
+                    MOUSE_RAW_SENDER mouse_raw_sender;
+                    std::thread mouseRawSenderThread([&]() {
+                    mouse_raw_sender._start("5100", COMPUTERS_IP_NUMBER[i], "LEFT");}); 
 
+                    mouseRawSenderThread.join();
+                }
+                else if (currentMousePosition.x == MAX_SCREEN_WIDTH && COMPUTER_DIRECTION[i] == "RIGHT"){
 
-                mouseRawSenderThread.join();
-                // inputListenerThread.join();
-            }
-            else if (currentMousePosition.x == MAX_SCREEN_WIDTH){
+                    // ** MOUSE RAW SENDER ** //
+                    MOUSE_RAW_SENDER mouse_raw_sender;
+                    std::thread mouseRawSenderThread([&]() {
+                    mouse_raw_sender._start("5300", COMPUTERS_IP_NUMBER[i], "RIGHT");});
 
-                // ** MOUSE RAW SENDER ** //
-                MOUSE_RAW_SENDER mouse_raw_sender;
-                std::thread mouseRawSenderThread([&mouse_raw_sender]() {
-                mouse_raw_sender._start("5300", "192.168.1.23", "RIGHT");});
+                    mouseRawSenderThread.join();
+                }
+            } 
 
-                // ** INPUT LISTENER ** //
-                // INPUT_LISTENER input_listener;
-                // std::thread inputListenerThread([&input_listener]() {
-                // input_listener._start(6300, "192.168.1.23", "LEFT");}); 
+            // if (currentMousePosition.x == 0){
 
-                mouseRawSenderThread.join();
-          //      inputListenerThread.join();
-            }
+            //     // ** MOUSE RAW SENDER ** //
+            //     MOUSE_RAW_SENDER mouse_raw_sender;
+            //     std::thread mouseRawSenderThread([&mouse_raw_sender]() {
+            //     mouse_raw_sender._start("5100", "192.168.1.23", "LEFT");}); 
+
+            //     mouseRawSenderThread.join();
+            // }
+            // else if (currentMousePosition.x == MAX_SCREEN_WIDTH){
+
+            //     // ** MOUSE RAW SENDER ** //
+            //     MOUSE_RAW_SENDER mouse_raw_sender;
+            //     std::thread mouseRawSenderThread([&mouse_raw_sender]() {
+            //     mouse_raw_sender._start("5300", "192.168.1.23", "RIGHT");});
+
+            //     mouseRawSenderThread.join();
+            // }
 
         }
     }

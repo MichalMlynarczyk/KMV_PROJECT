@@ -27,11 +27,11 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
         // ** TWORZENIE POŁĄCZENIA UDP DLA INPUT SENDER ** //
         input_sender._startupWinsock();
-        input_sender._createHintStructure(6100, "192.168.1.23");
+        input_sender._createHintStructure(stoi(PORT) + 1000, IP);
 
         // ** ZATRZYMYWANIE KLAWIATURY ** //
         std::thread keyboardThread([&]() {
-        keybord._start();});
+        keybord._start(IP, stoi(PORT) + 1000);});
 
         keyboardThread.detach(); 
 
@@ -170,6 +170,12 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
                         input_sender._send("MOUSE_INPUT_RIGHT_OFF");
                     }
 
+                    if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL){
+					    int x = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
+                        string msg = "SCROLL " + std::to_string(x);
+                        input_sender._send(msg);
+                    }
+
 
                     int tab [2];
                     tab[0] = mX;
@@ -180,35 +186,6 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
                 }
 
                 delete[] buffer;
-                break;
-            }
-            case WM_MOUSEWHEEL: 
-            {
-                // Przewijanie myszy w osi pionowej (góra/dół)
-                short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-                if (delta > 0) {
-                    // Przewinięcie w górę
-                    //input_sender._send("MOUSE_SCROLL_UP");
-                    std::cout << "MOUSE_SCROLL_UP" << std::endl;
-                }
-                else if (delta < 0) {
-                    // Przewinięcie w dół
-                    //input_sender._send("MOUSE_SCROLL_DOWN");
-                    std::cout << "MOUSE_SCROLL_DOWN" << std::endl;
-                }
-                break;
-            }
-            case WM_MOUSEHWHEEL: 
-            {
-                // Przewijanie myszy w osi poziomej (lewo/prawo)
-                short delta = GET_WHEEL_DELTA_WPARAM(wParam);
-                if (delta > 0) {
-                    // Przewinięcie w lewo
-                    std::cout << "MOUSE_SCROLL_UP_" << std::endl;
-                } else if (delta < 0) {
-                    // Przewinięcie w prawo
-                    std::cout << "MOUSE_SCROLL_DOWN_" << std::endl;
-                }
                 break;
             }
             default:
@@ -282,5 +259,3 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
 
 };
-
-

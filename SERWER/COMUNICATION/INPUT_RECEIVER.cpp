@@ -39,54 +39,92 @@ class INPUT_RECEIVER : public RECEIVER{
         return keyCode;
     }
 
+    int _getScrollPos(char * buf){
+        
+        int *tab = new int[2];
+        string keyCodeString = "";
+        int keyCode;
+
+        for(int i = 0; i < strlen(buf); i++){
+            if (std::isdigit(buf[i])) {
+                keyCodeString += buf[i];
+            } else if (buf[i] == '-'){
+                keyCodeString += buf[i];
+            }
+        }
+
+        keyCode = std::stoi(keyCodeString);
+
+        return keyCode;
+    }
+
     INPUT input;
 
 
     void _receivedData(char *buf) override {
 
+        std::cout << "BUF: " << buf << std::endl;
+
+        /// ****           SCROLL              **** ///
+        if (std::strncmp(buf, "SCROLL", 6) == 0) {
+            int mouseVector = _getScrollPos(buf) * 120;                 // POBRANIE KODU KLAWISZA
+
+            std::cout << "MOUSE WHEEL: " << mouseVector << std::endl;
+
+            input.type = INPUT_MOUSE;
+            input.mi.dx = 0;
+            input.mi.dy = 0;
+            input.mi.mouseData = mouseVector; // 120 = scroll up, -120 = scroll down
+            input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+            input.mi.time = 0;
+            input.mi.dwExtraInfo = 0;
+
+            // Simulate scroll movement
+            SendInput(1, &input, sizeof(INPUT));
+
+        }
+
         /// ****            KEY UP              **** ///
 
         if (std::strncmp(buf, "Key up", 6) == 0) {
-            int keyCode = _getKeyCode(buf);
 
-            if (keyCode == 164){  // LEWY
+            int keyCode = _getKeyCode(buf);                 // POBRANIE KODU KLAWISZA
+
+            // ** LEWY ALT ** //
+            if (keyCode == 164){  
 
                 INPUT input;
 
-                // Zwolnienie klawisza Windows
                 input.type = INPUT_KEYBOARD;
-                input.ki.wVk = VK_LMENU;  // Kod klawisza Windows
+                input.ki.wVk = VK_LMENU;  
                 input.ki.wScan = 0;
                 input.ki.dwFlags = KEYEVENTF_KEYUP;
                 input.ki.time = 0;
                 input.ki.dwExtraInfo = 0;
 
-                // Symulowanie tylko zwolnienia klawisza Windows
                 SendInput(1, &input, sizeof(INPUT));
-
 
                 return;
             }
 
-            if (keyCode == 165){  // PRAWY
+            // ** PRAWY ALT ** //
+            if (keyCode == 165){  
 
                 INPUT input;
 
-                // Zwolnienie klawisza Windows
                 input.type = INPUT_KEYBOARD;
-                input.ki.wVk = VK_RMENU;  // Kod klawisza Windows
+                input.ki.wVk = VK_RMENU;  
                 input.ki.wScan = 0;
                 input.ki.dwFlags = KEYEVENTF_KEYUP;
                 input.ki.time = 0;
                 input.ki.dwExtraInfo = 0;
 
-                // Symulowanie tylko zwolnienia klawisza Windows
                 SendInput(1, &input, sizeof(INPUT));
-
 
                 return;
             }
 
+            // ** WINDOWS ** //
             if (keyCode == 91){
 
                 INPUT input;
@@ -106,20 +144,11 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
+            // ** LEWY CTRL ** //
             if (keyCode == 162){
     
-                std::cout << "CTRL" << std::endl;
                 INPUT input;
 
-                // Wciśnięcie klawisza Ctrl
-                // inputs[0].type = INPUT_KEYBOARD;
-                // inputs[0].ki.wVk = VK_CONTROL;  // Kod klawisza Ctrl
-                // inputs[0].ki.wScan = 0;
-                // inputs[0].ki.dwFlags = 0;
-                // inputs[0].ki.time = 0;
-                // inputs[0].ki.dwExtraInfo = 0;
-
-                // Zwolnienie klawisza Ctrl
                 input.type = INPUT_KEYBOARD;
                 input.ki.wVk = VK_CONTROL;  // Kod klawisza Ctrl
                 input.ki.wScan = 0;
@@ -174,7 +203,7 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
-            std::cout << "Key Code UP: " << keyCode << std::endl;
+            // ** RESZTA PRZYCISKÓW ** //
 
             keybd_event(keyCode, 0, 0, 0);
         }
@@ -187,19 +216,10 @@ class INPUT_RECEIVER : public RECEIVER{
 
             //      ***     LEWY CTRL    ***      //
             //      ***     PRAWY CTRL    ***      //
-            //      ***     LEWY ALT    ***      //
-            //      ***     PRAWY ALT    ***      //
-            //      ***     WINDOWS    ***      //
             if (    keyCode == 162 
                  || keyCode == 163
-          //       || keyCode == 164 
-          //       || keyCode == 165
-                // || keyCode == 91
-             //    || keyCode == 161
-             //    || keyCode == 160
                  )
             {
-
                 // SYMULACJA CIĄGŁĘGO WCIŚNIĘCIA DANEGO PRZYCISKU
 
                 keybd_event(keyCode, 0, KEYEVENTF_KEYUP, 0);
@@ -208,7 +228,8 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
-            if (keyCode == 161){ // PRAWY SHIFT
+            // ** PRAWY SHIFT ** //
+            if (keyCode == 161){ 
                 INPUT input;
 
                 // Wciśnięcie klawisza Windows
@@ -225,7 +246,8 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
-            if (keyCode == 160){ // LEWY SHIFT
+            // ** LEWY SHIFT ** //
+            if (keyCode == 160){ 
                 INPUT input;
 
                 // Wciśnięcie klawisza Windows
@@ -242,7 +264,8 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
-            if (keyCode == 164){ // LEWY ALT 
+            // ** LEWY ALT ** //
+            if (keyCode == 164){ 
                 INPUT input;
 
                 // Wciśnięcie klawisza Windows
@@ -259,8 +282,9 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
+            // ** PRAWY ALT ** //
             if (keyCode == 165){ 
-                std::cout << "FLAGA_1" << std::endl;
+
                 INPUT input;
 
                 // Wciśnięcie klawisza Windows
@@ -277,6 +301,7 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
+            // ** WINDOWS ** //
             if ( keyCode == 91 ){
 
                 keybd_event(keyCode, 0, KEYEVENTF_KEYUP, 0);
@@ -285,8 +310,7 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
-
-            std::cout << "Key Code DOWN: " << keyCode << std::endl;
+            // ** RESZTA PRZYCISKÓW ** //
                     
             keybd_event(keyCode, 0, KEYEVENTF_KEYUP, 0);    // NACIŚNIĘCIE KLAWISZA
         }

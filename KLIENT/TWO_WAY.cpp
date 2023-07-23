@@ -29,6 +29,10 @@ string CLIENT_PORT;
 string RECEIVER_PORT;
 string CLIENT_IP;
 
+string COMPUTERS_NUMBER;                                // ILE KOMPUTERÓW MA BYĆ DODANE
+string * COMPUTERS_IP_NUMBER;                           // TABLICA Z NUMERAMI IP KOMPÓTERÓW
+string * COMPUTER_DIRECTION;                            // KIERUNEK DOŁĄCZENIA KOMPUTERA
+
 void _clearScreen() {
     /*
         DO CZYSZCZENIA KONSOLI
@@ -57,21 +61,30 @@ void _downloadInformation(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     _clearScreen();                                     // CZYSZCZENIE EKRANU
 
-    // Pobierz  NR PORTU
+    // Pobierz  COMPUTERS NUMBER
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-    cout << "Podaj numer portu na ktorym bedziemy nasluchiwac: ";
+    cout << "Podaj ile komputerow chcesz dodac (MAX 2): ";
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-    getline(cin, RECEIVER_PORT);
-    // Pobierz  IP
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-    cout << "Podaj numer IP na ktory dane beda wysylane: ";
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-    getline(cin, CLIENT_IP);
-    // Pobierz  NR PORTU
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-    cout << "Podaj numer portu do wysylania danych: ";
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-    getline(cin, CLIENT_PORT);
+    getline(cin, COMPUTERS_NUMBER);
+
+    // TWORZENIE TABLICY STRINGÓW
+    COMPUTERS_IP_NUMBER = new string [stoi(COMPUTERS_NUMBER)];
+    COMPUTER_DIRECTION = new string [stoi(COMPUTERS_NUMBER)];
+
+    for (int i = 0; i < stoi(COMPUTERS_NUMBER); i++){
+
+        // Pobierz  COMPUTER IP
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+        cout << "Podaj IP komputera: ";
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+        getline(cin, COMPUTERS_IP_NUMBER[i]);
+
+        // POBIERZ DIRECTION
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+        cout << "Z jakiej strony dodac komputer (LEFT/RIGHT): ";
+        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+        getline(cin, COMPUTER_DIRECTION[i]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +92,12 @@ void _downloadInformation(){
 //////////////////////////////////////////////////////////////////////////////////////
 
 int main(){
+
+    _clearScreen();
+
+    _downloadInformation();
+
     MOUSE_RAW_SENDER_MANAGMENT mouse_raw_sender_managment;
-    mouse_raw_sender_managment._start();
+    mouse_raw_sender_managment._start(COMPUTERS_IP_NUMBER, COMPUTER_DIRECTION, stoi(COMPUTERS_NUMBER));
 }
 
