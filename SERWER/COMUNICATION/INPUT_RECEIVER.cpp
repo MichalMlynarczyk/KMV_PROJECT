@@ -10,10 +10,14 @@ class INPUT_RECEIVER : public RECEIVER{
 
     public:
 
+    int INPUT_RECEIVER_PORT_NUMBER;
+
     //////////////////////////////////////////////
     //////////////////////////////////////////////
 
     void _start(int PORT_NUMBER){
+
+        this -> INPUT_RECEIVER_PORT_NUMBER = PORT_NUMBER;
 
         _receiveData(PORT_NUMBER);                 // NASŁUCHIWANIE NA DANYM PORCIE
 
@@ -58,12 +62,59 @@ class INPUT_RECEIVER : public RECEIVER{
         return keyCode;
     }
 
+    float _getMonitorProportion(char * buf){
+
+        int *tab = new int[2];
+        string keyCodeString = "";
+        float keyCode;
+
+        for(int i = 0; i < strlen(buf); i++){
+            if (std::isdigit(buf[i])) {
+                keyCodeString += buf[i];
+            } else if (buf[i] == '.'){
+                keyCodeString += buf[i];
+            }
+        }
+
+        keyCode = std::stof(keyCodeString);
+
+        return keyCode;
+    }
+
     INPUT input;
 
 
     void _receivedData(char *buf) override {
 
         std::cout << "BUF: " << buf << std::endl;
+
+        /// ****       MOUSE POSITION        **** ///
+        if (std::strncmp(buf, "MP:", 3) == 0){
+            float monitor_proportion = _getMonitorProportion(buf);
+
+            std::cout << "MONITOR_PROPORTION: " << monitor_proportion << std::endl;
+
+            POINT currentMousePosition;
+            GetCursorPos(&currentMousePosition);         // POBRANIE I ZAPISANIE OBECNEJ POZYCJI MYSZKI
+
+            POINT newMousePosition;
+            int monitorHeight = GetSystemMetrics(SM_CYSCREEN);              // WYSOKOŚĆ MONITORA
+
+            float new_height_float = static_cast<float>(monitorHeight) * monitor_proportion;
+            int new_height_int = static_cast<int>(new_height_float);
+
+            std::cout << "NEW_HEIGHT_INT: " << new_height_int << std::endl;
+
+            newMousePosition.y = new_height_int;
+
+            if (INPUT_RECEIVER_PORT_NUMBER == 6100)
+                newMousePosition.x = GetSystemMetrics(SM_CXVIRTUALSCREEN) - 1;        
+            else if (INPUT_RECEIVER_PORT_NUMBER == 6300)
+                newMousePosition.x = 0; 
+            
+
+            SetCursorPos(newMousePosition.x, newMousePosition.y);           // PRZESUNIĘCIE MYSZKI
+        }
 
         /// ****           SCROLL              **** ///
         if (std::strncmp(buf, "SCROLL", 6) == 0) {

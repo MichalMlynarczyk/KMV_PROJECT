@@ -1,3 +1,4 @@
+#include <sstream> 
 
 /*
     ** -- KLASA MOUSE RAW SENDER MANAGMENT -- **
@@ -36,6 +37,25 @@ class MOUSE_RAW_SENDER_MANAGMENT{
 
                 if (currentMousePosition.x == 0 && COMPUTER_DIRECTION[i] == "LEFT"){
 
+                    // ** WYSYŁANIE WIADOMOŚĆI O ZMINA POZYCJi KURSORA ** //
+                    INPUT_LISTENER input;
+                    input._startupWinsock();
+                    input._createHintStructure(5100 + 1000, COMPUTERS_IP_NUMBER[i]);
+
+                    // ** POBRANIE WYSOKOŚĆI MONITORA ** //
+                    int monitorHeight = GetSystemMetrics(SM_CYSCREEN);
+                    float monitor_proportion = static_cast<float>(currentMousePosition.y) /  static_cast<float>(monitorHeight);
+                    std::ostringstream monitor_proportion_ostring;
+                    monitor_proportion_ostring << monitor_proportion;
+                    std::string monitor_proportion_string = monitor_proportion_ostring.str();
+
+                    // ** WIADOMOŚĆ WYSYŁANA DO KLIENTA ** //
+                    std::string msg = "MP: " + monitor_proportion_string;
+
+                    // ** WYSYŁANIE DANYCH O POZYCJI KORSORA ** //
+                    input._send(msg);
+                    input._stop();
+
                     // ** MOUSE RAW SENDER ** //
                     MOUSE_RAW_SENDER mouse_raw_sender;
                     std::thread mouseRawSenderThread([&]() {
@@ -44,6 +64,25 @@ class MOUSE_RAW_SENDER_MANAGMENT{
                     mouseRawSenderThread.join();
                 }
                 else if (currentMousePosition.x == MAX_SCREEN_WIDTH && COMPUTER_DIRECTION[i] == "RIGHT"){
+
+                    // ** WYSYŁANIE WIADOMOŚĆI O ZMINA POZYCJi KURSORA ** //
+                    INPUT_LISTENER input;
+                    input._startupWinsock();
+                    input._createHintStructure(5300 + 1000, COMPUTERS_IP_NUMBER[i]);
+
+                    // ** POBRANIE WYSOKOŚĆI MONITORA ** //
+                    int monitorHeight = GetSystemMetrics(SM_CYSCREEN);
+                    float monitor_proportion = static_cast<float>(currentMousePosition.y) /  static_cast<float>(monitorHeight);
+                    std::ostringstream monitor_proportion_ostring;
+                    monitor_proportion_ostring << monitor_proportion;
+                    std::string monitor_proportion_string = monitor_proportion_ostring.str();
+
+                    // ** WIADOMOŚĆ WYSYŁANA DO KLIENTA ** //
+                    std::string msg = "MP: " + monitor_proportion_string;
+
+                    // ** WYSYŁANIE DANYCH O POZYCJI KORSORA ** //
+                    input._send(msg);
+                    input._stop();
 
                     // ** MOUSE RAW SENDER ** //
                     MOUSE_RAW_SENDER mouse_raw_sender;
