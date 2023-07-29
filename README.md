@@ -32,6 +32,8 @@ RUN AS CLIENT:
 
 ![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/68b9262b-9815-40e0-afb5-8d84ec7c2629)
 
+![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/477e468b-40ab-447f-94ac-a2215a36c56a)
+
 ![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/c52fd002-5e77-4c2e-8b31-23dec62493cf)
 
 
