@@ -22,10 +22,7 @@ RUN AS SERVER :
 
 ![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/55b52907-ea9c-49b8-8f98-8d6c2bf77e77)
 
-![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/60f5adb6-be5f-4dcd-b9b6-02631ef5b0c7)
-
 ![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/ffa165c9-c8db-4969-aca4-ee41282737a6)
-
 
 ![image](https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/79961de1-b365-4d1a-acc8-cfb88b7e7b27)
 
