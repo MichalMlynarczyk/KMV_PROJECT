@@ -39,7 +39,7 @@ public:
     }
 
     ~MOUSE_SUPPORT(){
-        std::cout << "KONIEC MOUSE SUPPORT" << std::endl;
+        //std::cout << "KONIEC MOUSE SUPPORT" << std::endl;
     }
 
     //////////////////////////////////////////////
@@ -54,14 +54,12 @@ public:
 
         if (nCode >= 0) {
             if (wParam == WM_LBUTTONDOWN) {
-                std::cout << "Left mouse button down" << std::endl;
              //   _send("MOUSE_INPUT_LEFT_ON");
             }
         }
 
         if (nCode < 0) {
 
-            std::cout << "FLAGA_1" << std::endl;
 
             return CallNextHookEx(mouseHook, nCode, wParam, lParam);
         }
@@ -83,8 +81,6 @@ public:
                 LPARAM lParam = msg.lParam;
                 char buffer[256];
                 GetKeyNameTextA(lParam, buffer, sizeof(buffer));
-
-                std::cout << "Key Down - Key: " << static_cast<int>(wParam) << ", Name: " << buffer << std::endl;
             }
 
             TranslateMessage(&msg);

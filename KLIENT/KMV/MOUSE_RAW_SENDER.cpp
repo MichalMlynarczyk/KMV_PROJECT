@@ -56,7 +56,7 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
     }
 
     ~MOUSE_RAW_SENDER(){
-        std::cout << "KONIEC MOUSE RAW SENDER" << std::endl; 
+        //std::cout << "KONIEC MOUSE RAW SENDER" << std::endl; 
     }
 
     ////////////////////////////////////////////////////////
@@ -155,7 +155,6 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
                     // ** WCIŚNIĘCIE LEWEGO PRZYCISKU MYSZKI ** //
                     if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) != 0) {
-                        std::cout   <<  &input_sender  <<  std::endl;
                         input_sender._send("MOUSE_INPUT_LEFT_ON");
                     }
                     else if ((raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) != 0) {
@@ -196,6 +195,7 @@ class MOUSE_RAW_SENDER : public SENDER_TEMP{
 
     static LRESULT CALLBACK WindowProcStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
         MOUSE_RAW_SENDER* pThis;
+
         if (message == WM_NCCREATE) {
             pThis = static_cast<MOUSE_RAW_SENDER*>(reinterpret_cast<CREATESTRUCT*>(lParam)->lpCreateParams);
             SetLastError(0);

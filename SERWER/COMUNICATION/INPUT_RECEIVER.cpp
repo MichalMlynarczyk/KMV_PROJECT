@@ -83,16 +83,11 @@ class INPUT_RECEIVER : public RECEIVER{
 
     INPUT input;
 
-
     void _receivedData(char *buf) override {
-
-        std::cout << "BUF: " << buf << std::endl;
 
         /// ****       MOUSE POSITION        **** ///
         if (std::strncmp(buf, "MP:", 3) == 0){
             float monitor_proportion = _getMonitorProportion(buf);
-
-            std::cout << "MONITOR_PROPORTION: " << monitor_proportion << std::endl;
 
             POINT currentMousePosition;
             GetCursorPos(&currentMousePosition);         // POBRANIE I ZAPISANIE OBECNEJ POZYCJI MYSZKI
@@ -102,8 +97,6 @@ class INPUT_RECEIVER : public RECEIVER{
 
             float new_height_float = static_cast<float>(monitorHeight) * monitor_proportion;
             int new_height_int = static_cast<int>(new_height_float);
-
-            std::cout << "NEW_HEIGHT_INT: " << new_height_int << std::endl;
 
             newMousePosition.y = new_height_int;
 
@@ -119,8 +112,6 @@ class INPUT_RECEIVER : public RECEIVER{
         /// ****           SCROLL              **** ///
         if (std::strncmp(buf, "SCROLL", 6) == 0) {
             int mouseVector = _getScrollPos(buf) * 120;                 // POBRANIE KODU KLAWISZA
-
-            std::cout << "MOUSE WHEEL: " << mouseVector << std::endl;
 
             input.type = INPUT_MOUSE;
             input.mi.dx = 0;
@@ -214,6 +205,44 @@ class INPUT_RECEIVER : public RECEIVER{
                 return;
             }
 
+            // ** LEWY CTRL ** //
+            if (keyCode == 162){
+    
+                INPUT input;
+
+                input.type = INPUT_KEYBOARD;
+                input.ki.wVk = VK_CONTROL;  // Kod klawisza Ctrl
+                input.ki.wScan = 0;
+                input.ki.dwFlags = KEYEVENTF_KEYUP;
+                input.ki.time = 0;
+                input.ki.dwExtraInfo = 0;
+
+                // Symulowanie wciśnięcia i zwolnienia klawisza Ctrl
+                SendInput(1, &input, sizeof(INPUT));
+
+
+                return;
+            }
+
+            if (keyCode == 163){
+    
+                INPUT input;
+
+                input.type = INPUT_KEYBOARD;
+                input.ki.wVk = VK_CONTROL;  // Kod klawisza Ctrl
+                input.ki.wScan = 0;
+                input.ki.dwFlags = KEYEVENTF_KEYUP;
+                input.ki.time = 0;
+                input.ki.dwExtraInfo = 0;
+
+                // Symulowanie wciśnięcia i zwolnienia klawisza Ctrl
+                SendInput(1, &input, sizeof(INPUT));
+
+
+                return;
+            }
+
+
             // PRAWY SHIFT //
             if (keyCode == 161){
 
@@ -268,7 +297,19 @@ class INPUT_RECEIVER : public RECEIVER{
             //      ***     LEWY CTRL    ***      //
             //      ***     PRAWY CTRL    ***      //
             if (    keyCode == 162 
-                 || keyCode == 163
+             //    || keyCode == 163
+                 )
+            {
+                // SYMULACJA CIĄGŁĘGO WCIŚNIĘCIA DANEGO PRZYCISKU
+
+                keybd_event(keyCode, 0, KEYEVENTF_KEYUP, 0);
+                keybd_event(keyCode, 0, 0, 0);
+            
+                return;
+            }
+
+            if (  //  keyCode == 162 
+              keyCode == 163
                  )
             {
                 // SYMULACJA CIĄGŁĘGO WCIŚNIĘCIA DANEGO PRZYCISKU

@@ -68,10 +68,16 @@ int _downloadPortNumberMouseRaw(){
     return stoi(PORT);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 
-    int MOUSE_RAW_PORT_NUMBER =         _downloadPortNumberMouseRaw();
-    int INPUT_LISTENER_PORT_NUMBER =    _downloadPortNumberInputListener();
+    //int MOUSE_RAW_PORT_NUMBER =         _downloadPortNumberMouseRaw();
+    //int INPUT_LISTENER_PORT_NUMBER =    _downloadPortNumberInputListener();
+
+    int MOUSE_RAW_PORT_NUMBER = std::atoi(argv[1]);
+    int INPUT_LISTENER_PORT_NUMBER = std::atoi(argv[2]);
+
+    // std::cout << "MOUSE_RAW_PORT_NUMBER: " << MOUSE_RAW_PORT_NUMBER << std::endl;
+    // std::cout << "INPUT_LISTENER_PORT_NUMBER: " << INPUT_LISTENER_PORT_NUMBER << std::endl;
 
     // ** ODBIERANIE I PRZETWARZANIE MOUSE RAW ** //
     MOUSE_RAW_RECEIVER mouseRECEIVER;

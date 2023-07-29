@@ -18,11 +18,18 @@ static std::list<int> keyCodeSave;
 static string IP_NUMBER;
 static int PORT_NUMBER;
 
+
+//KEYBOARD* g_pKeyboardInstance = nullptr;
+
+
 class KEYBOARD {
 public:
 
+ static KEYBOARD* g_pKeyboardInstance;
+
     HHOOK keyboardHook;
     bool stopFlag           = false;                      // DO ZAKOŃCZENIA DZIAŁANIE OBIEKTU
+    INPUT_LISTENER input_;
 
 
     ////////////////////////////////////////////
@@ -32,6 +39,10 @@ public:
 
         IP_NUMBER = ip;
         PORT_NUMBER = port;
+
+        input_._startupWinsock();
+        input_._createHintStructure(PORT_NUMBER, IP_NUMBER);
+
         _deactivateKeyboard();
     }
 
@@ -41,14 +52,25 @@ public:
     }
 
     ~KEYBOARD(){
-        std::cout << "KONIEC KEYBOARD" << std::endl;
+        // std::cout << "KONIEC KEYBOARD" << std::endl;
     }
     ////////////////////////////////////////////
     ////////////////////////////////////////////
 
-    static LRESULT CALLBACK KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam) {
-        KEYBOARD* pThis = reinterpret_cast<KEYBOARD*>(GetModuleHandle(NULL));
-        return pThis->HandleKeyboardHook(nCode, wParam, lParam);
+   // LRESULT CALLBACK KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam) {
+   //     std::cout << "OK" << std::endl;
+        // HMODULE hModule = GetModuleHandle(NULL);
+        // //KEYBOARD* pThis = reinterpret_cast<KEYBOARD*>(GetModuleHandle(NULL));
+        // KEYBOARD* pThis = reinterpret_cast<KEYBOARD*>(lParam)->lpCreateParams);
+        // return pThis->HandleKeyboardHook(nCode, wParam, lParam);
+    //}
+
+    static LRESULT CALLBACK KeyboardHookProc(int nCode, WPARAM wParam, LPARAM lParam) { 
+        if (nCode >= 0 && g_pKeyboardInstance) {
+            return g_pKeyboardInstance->HandleKeyboardHook(nCode, wParam, lParam);
+        }
+
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
 
     LRESULT HandleKeyboardHook(int nCode, WPARAM wParam, LPARAM lParam) {
@@ -59,7 +81,7 @@ public:
 
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
 
-                KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+                //KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 
                 int flaga = -1;
 
@@ -69,15 +91,18 @@ public:
                     }
                 }
 
+
                 if (flaga == -1){
 
-                    INPUT_LISTENER input;
-                    input._startupWinsock();
-                    input._createHintStructure(PORT_NUMBER, IP_NUMBER);
+                    string key;
 
-                    string key = "Key down: " + std::to_string(kbStruct->vkCode);
+                    if (kbStruct->vkCode == 163){
+                        key = "Key down: 162";
+                    } else {
+                        key = "Key down: " + std::to_string(kbStruct->vkCode);
+                    }
 
-                    input._send(key);
+                    input_._send(key);
 
                     keyCodeSave.push_back(kbStruct->vkCode);
 
@@ -90,7 +115,7 @@ public:
 
             else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
 
-                KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+                //KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 
                 auto it = keyCodeSave.begin();
                 for (; it != keyCodeSave.end(); ++it) {
@@ -101,25 +126,28 @@ public:
 
                 if (it != keyCodeSave.end()) {
 
-                    INPUT_LISTENER input;
-                    input._startupWinsock();
-                    input._createHintStructure(PORT_NUMBER, IP_NUMBER);
-
                     keyCodeSave.erase(it);
 
-                    string key = "Key up: " + std::to_string(kbStruct->vkCode);
-                    
-                    input._send(key);
                 }
+
+                string key;
+
+                if (kbStruct->vkCode == 163){
+                    key = "Key up: 162";
+                } else {
+                    key = "Key up: " + std::to_string(kbStruct->vkCode);
+                }
+                
+                input_._send(key);
 
                 return 1;
             }
             else {
 
-                KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+                //KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
 
                 // ** POZBYWANIE SIĘ CTRL PRZY WCISKANIU ALTA ** //
-                if (kbStruct->vkCode == 162) {
+                if (kbStruct->vkCode == 162 || kbStruct->vkCode == 163) {
                     return 1;
                 }
 
@@ -133,13 +161,17 @@ public:
 
                 if (flaga == -1){
 
-                    INPUT_LISTENER input;
-                    input._startupWinsock();
-                    input._createHintStructure(PORT_NUMBER, IP_NUMBER);
+                    string key;
 
-                    string key = "Key down: " + std::to_string(kbStruct->vkCode);
+                    if (kbStruct->vkCode == 163){
+                        key = "Key down: 162";
+                    } else {
+                        key = "Key down: " + std::to_string(kbStruct->vkCode);
+                    }
                     
-                    input._send(key);
+                    input_._send(key);
+                    
+                    input_._send(key);
 
                     keyCodeSave.push_back(kbStruct->vkCode);
 
@@ -158,7 +190,8 @@ public:
     void _deactivateKeyboard() {
 
         // Wyłączenie obsługi klawiatury
-        keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, &KeyboardHookProc, NULL, 0);
+        g_pKeyboardInstance = this;
+        keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHookProc, GetModuleHandle(NULL), 0);
         
         MSG msg;
         while (!stopFlag && GetMessage(&msg, NULL, 0, 0)) {
@@ -175,3 +208,5 @@ public:
     }
 
 };
+
+KEYBOARD* KEYBOARD::g_pKeyboardInstance = nullptr; 

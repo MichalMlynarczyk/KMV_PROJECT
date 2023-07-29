@@ -40,7 +40,7 @@ class INPUT_LISTENER : public SENDER_TEMP{
     }
 
     ~INPUT_LISTENER(){
-        std::cout << "KONIEC INPUT LISTENER" << std::endl; 
+        // std::cout << "KONIEC INPUT LISTENER" << std::endl; 
     }
 
     //////////////////////////////////////////////
@@ -70,12 +70,10 @@ class INPUT_LISTENER : public SENDER_TEMP{
             // ** WYKRYWANIE LEWEGO PRZYCISKU ** //
             if (_isLeftMouseButtonPressed() && LEFT_BUTTON_PRESSED == 0){
                 _send("MOUSE_INPUT_LEFT_ON");
-                std::cout << "MOUSE_INPUT_LEFT_ON" << std::endl;
                 LEFT_BUTTON_PRESSED = 1;
             }
             else if (_isLeftMouseButtonPressed() == false && LEFT_BUTTON_PRESSED == 1){
                 _send("MOUSE_INPUT_LEFT_OFF");
-                std::cout << "MOUSE_INPUT_LEFT_OFF" << std::endl;
                 LEFT_BUTTON_PRESSED = 0;
             }
 

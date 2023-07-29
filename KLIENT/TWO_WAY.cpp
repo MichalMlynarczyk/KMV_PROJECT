@@ -29,75 +29,101 @@ string CLIENT_PORT;
 string RECEIVER_PORT;
 string CLIENT_IP;
 
-string COMPUTERS_NUMBER;                                // ILE KOMPUTERÓW MA BYĆ DODANE
-string * COMPUTERS_IP_NUMBER;                           // TABLICA Z NUMERAMI IP KOMPÓTERÓW
-string * COMPUTER_DIRECTION;                            // KIERUNEK DOŁĄCZENIA KOMPUTERA
+//string COMPUTERS_NUMBER;                                // ILE KOMPUTERÓW MA BYĆ DODANE
+//string * COMPUTERS_IP_NUMBER;                           // TABLICA Z NUMERAMI IP KOMPÓTERÓW
+//string * COMPUTER_DIRECTION;                            // KIERUNEK DOŁĄCZENIA KOMPUTERA
 
-void _clearScreen() {
-    /*
-        DO CZYSZCZENIA KONSOLI
-    */
+// void _clearScreen() {
+//     /*
+//         DO CZYSZCZENIA KONSOLI
+//     */
 
-    COORD coordScreen = { 0, 0 };
-    DWORD cCharsWritten;
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    DWORD dwConSize;
+//     COORD coordScreen = { 0, 0 };
+//     DWORD cCharsWritten;
+//     CONSOLE_SCREEN_BUFFER_INFO csbi;
+//     DWORD dwConSize;
 
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-    FillConsoleOutputCharacter(hConsole, TEXT(' '), dwConSize, coordScreen, &cCharsWritten);
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
-    SetConsoleCursorPosition(hConsole, coordScreen);
-}
+//     GetConsoleScreenBufferInfo(hConsole, &csbi);
+//     dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+//     FillConsoleOutputCharacter(hConsole, TEXT(' '), dwConSize, coordScreen, &cCharsWritten);
+//     GetConsoleScreenBufferInfo(hConsole, &csbi);
+//     FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+//     SetConsoleCursorPosition(hConsole, coordScreen);
+// }
 
-void _downloadInformation(){
-    /*
-        POBIERA INFORMACJE O PORCIE KTÓRY NASŁUCHUJE
-            O PORCIE KTÓRY WYSYŁA
-            O IP NA KTÓRE WYSYŁAMY WIADOMOŚĆI
-    */
+// void _downloadInformation(){
+//     /*
+//         POBIERA INFORMACJE O PORCIE KTÓRY NASŁUCHUJE
+//             O PORCIE KTÓRY WYSYŁA
+//             O IP NA KTÓRE WYSYŁAMY WIADOMOŚĆI
+//     */
 
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    _clearScreen();                                     // CZYSZCZENIE EKRANU
+//     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//     _clearScreen();                                     // CZYSZCZENIE EKRANU
 
-    // Pobierz  COMPUTERS NUMBER
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-    cout << "Podaj ile komputerow chcesz dodac (MAX 2): ";
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-    getline(cin, COMPUTERS_NUMBER);
+//     // Pobierz  COMPUTERS NUMBER
+//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//     cout << "Podaj ile komputerow chcesz dodac (MAX 2): ";
+//     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+//     getline(cin, COMPUTERS_NUMBER);
 
-    // TWORZENIE TABLICY STRINGÓW
-    COMPUTERS_IP_NUMBER = new string [stoi(COMPUTERS_NUMBER)];
-    COMPUTER_DIRECTION = new string [stoi(COMPUTERS_NUMBER)];
+//     // TWORZENIE TABLICY STRINGÓW
+//     COMPUTERS_IP_NUMBER = new string [stoi(COMPUTERS_NUMBER)];
+//     COMPUTER_DIRECTION = new string [stoi(COMPUTERS_NUMBER)];
 
-    for (int i = 0; i < stoi(COMPUTERS_NUMBER); i++){
+//     for (int i = 0; i < stoi(COMPUTERS_NUMBER); i++){
 
-        // Pobierz  COMPUTER IP
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-        cout << "Podaj IP komputera: ";
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-        getline(cin, COMPUTERS_IP_NUMBER[i]);
+//         // Pobierz  COMPUTER IP
+//         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//         cout << "Podaj IP komputera: ";
+//         SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+//         getline(cin, COMPUTERS_IP_NUMBER[i]);
 
-        // POBIERZ DIRECTION
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-        cout << "Z jakiej strony dodac komputer (LEFT/RIGHT): ";
-        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
-        getline(cin, COMPUTER_DIRECTION[i]);
+//         // POBIERZ DIRECTION
+//         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//         cout << "Z jakiej strony dodac komputer (LEFT/RIGHT): ";
+//         SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
+//         getline(cin, COMPUTER_DIRECTION[i]);
+//     }
+// }
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+
+int main(int argc, char* argv[]){
+
+    if (argc == 3){
+
+        string COMPUTERS_IP_NUMBER[1];
+        COMPUTERS_IP_NUMBER[0] = argv[1];
+
+        string COMPUTER_DIRECTION[1];
+        COMPUTER_DIRECTION[0] = argv[2];
+
+        string COMPUTERS_NUMBER = "1";
+
+        MOUSE_RAW_SENDER_MANAGMENT mouse_raw_sender_managment;
+        mouse_raw_sender_managment._start(COMPUTERS_IP_NUMBER, COMPUTER_DIRECTION, stoi(COMPUTERS_NUMBER));
+
     }
-}
+    else if (argc == 5){
 
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////
+        string COMPUTERS_IP_NUMBER[2];
+        COMPUTERS_IP_NUMBER[0] = argv[1];
+        COMPUTERS_IP_NUMBER[1] = argv[3];
 
-int main(){
+        string COMPUTER_DIRECTION[2];
+        COMPUTER_DIRECTION[0] = argv[2];
+        COMPUTER_DIRECTION[1] = argv[4];
 
-    _clearScreen();
+        string COMPUTERS_NUMBER = "2";
 
-    _downloadInformation();
-
-    MOUSE_RAW_SENDER_MANAGMENT mouse_raw_sender_managment;
-    mouse_raw_sender_managment._start(COMPUTERS_IP_NUMBER, COMPUTER_DIRECTION, stoi(COMPUTERS_NUMBER));
+        MOUSE_RAW_SENDER_MANAGMENT mouse_raw_sender_managment;
+        mouse_raw_sender_managment._start(COMPUTERS_IP_NUMBER, COMPUTER_DIRECTION, stoi(COMPUTERS_NUMBER));
+    }
+     else {
+        return 1;
+    }
 }
 
