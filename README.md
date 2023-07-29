@@ -9,3 +9,6 @@ THE READY SOFTWARE IS IN THE "READY APPLICATION" FOLDER
 
 YOU CAN ADD UP TO TWO COMPUTERS
 
+
+<img width="682" alt="image" src="https://github.com/MichalMlynarczyk/KMV_PROJECT/assets/22431228/d683382c-56a8-4e65-8446-9f00a451ef79">
+
