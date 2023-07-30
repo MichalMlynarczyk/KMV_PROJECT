@@ -127,7 +127,6 @@ class INPUT_RECEIVER : public RECEIVER{
         }
 
         /// ****            KEY UP              **** ///
-
         if (std::strncmp(buf, "Key up", 6) == 0) {
 
             int keyCode = _getKeyCode(buf);                 // POBRANIE KODU KLAWISZA
@@ -289,7 +288,6 @@ class INPUT_RECEIVER : public RECEIVER{
         }
 
         /// ****           KEY DOWN             **** ///
-
         if (std::strncmp(buf, "Key down", 8) == 0) {    
 
             int keyCode = _getKeyCode(buf);                 // POBRANIE INFORMACJI O KODZIE KLAWISZA
@@ -405,6 +403,7 @@ class INPUT_RECEIVER : public RECEIVER{
             // ** RESZTA PRZYCISKÓW ** //
                     
             keybd_event(keyCode, 0, KEYEVENTF_KEYUP, 0);    // NACIŚNIĘCIE KLAWISZA
+
         }
 
         /// ****        OBSŁUGA MYSZKI        **** ///

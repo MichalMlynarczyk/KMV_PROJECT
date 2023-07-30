@@ -81,7 +81,17 @@ public:
 
             if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
 
+
                 //KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+
+                if (kbStruct->vkCode < 90){
+                    string msgKey = "Key down: " + std::to_string(kbStruct->vkCode);
+                    input_._send(msgKey);
+                    msgKey = "Key up: " + std::to_string(kbStruct->vkCode);
+                    input_._send(msgKey);
+
+                    return 1;
+                }
 
                 int flaga = -1;
 
@@ -116,6 +126,10 @@ public:
             else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
 
                 //KBDLLHOOKSTRUCT* kbStruct = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+
+                if (kbStruct->vkCode < 90){
+                    return 1;
+                }
 
                 auto it = keyCodeSave.begin();
                 for (; it != keyCodeSave.end(); ++it) {
